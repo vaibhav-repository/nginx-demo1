@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>vSphere Insight — ESXi Observability</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+  </head>
+  <body>
+    <div class="ambient" aria-hidden="true">
+      <span class="orb orb-a"></span>
+      <span class="orb orb-b"></span>
+      <span class="orb orb-c"></span>
+    </div>
+
+    <div class="app">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+          <span class="brand-mark">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M12 2L4 7v10l8 5 8-5V7l-8-5z"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M12 12l8-5M12 12L4 7M12 12v10"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </span>
+          <div>
+            <strong>vSphere Insight</strong>
+            <span>ESXi Observability</span>
+          </div>
+        </div>
+
+        <nav class="sidebar-nav" aria-label="Main navigation">
+          <a href="#" class="nav-item active" data-view="overview">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="3" width="7" height="7" rx="1" />
+              <rect x="14" y="3" width="7" height="7" rx="1" />
+              <rect x="3" y="14" width="7" height="7" rx="1" />
+              <rect x="14" y="14" width="7" height="7" rx="1" />
+            </svg>
+            Overview
+          </a>
+          <a href="#" class="nav-item" data-view="hosts">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="4" width="20" height="6" rx="1" />
+              <rect x="2" y="14" width="20" height="6" rx="1" />
+              <circle cx="6" cy="7" r="1" fill="currentColor" />
+              <circle cx="6" cy="17" r="1" fill="currentColor" />
+            </svg>
+            ESXi Hosts
+          </a>
+          <a href="#" class="nav-item" data-view="vms">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="4" y="4" width="16" height="16" rx="2" />
+              <path d="M9 9h6M9 12h6M9 15h4" />
+            </svg>
+            Virtual Machines
+          </a>
+          <a href="#" class="nav-item" data-view="storage">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <ellipse cx="12" cy="6" rx="8" ry="3" />
+              <path d="M4 6v6c0 1.66 3.58 3 8 3s8-1.34 8-3V6" />
+              <path d="M4 12v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6" />
+            </svg>
+            Datastores
+          </a>
+          <a href="#" class="nav-item" data-view="network">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="12" cy="12" r="2" />
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" />
+              <path d="M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
+            </svg>
+            Network
+          </a>
+          <a href="#" class="nav-item" data-view="licensing">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="4" y="5" width="16" height="14" rx="2" />
+              <path d="M8 9h8M8 13h5" />
+            </svg>
+            Licensing
+            <span class="nav-badge nav-badge--license hidden" id="license-nav-badge">0</span>
+          </a>
+          <a href="#" class="nav-item" data-view="ai">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" />
+              <path d="M5 19l1 3 1-3 3-1-3-1-3 1zM19 13l.8 2.2L22 16l-2.2.8L19 19l-.8-2.2L16 16l2.2-.8L19 13z" />
+            </svg>
+            AI Copilot
+          </a>
+          <a href="#" class="nav-item" data-view="alerts">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M18 8A6 6 0 106 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              <path d="M13.73 21a2 2 0 01-3.46 0" />
+            </svg>
+            Alerts
+            <span class="nav-badge" id="alert-badge">3</span>
+          </a>
+        </nav>
+
+        <div class="sidebar-cluster">
+          <span class="cluster-label">Active cluster</span>
+          <div class="cluster-card">
+            <div class="cluster-dot"></div>
+            <div>
+              <strong>DC-PROD-01</strong>
+              <span>vCenter 8.0 · 4 hosts</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sidebar-footer">
+          <div class="user-pill">
+            <span class="avatar">OP</span>
+            <div>
+              <strong>Ops Platform</strong>
+              <span>Administrator</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main class="main">
+        <header class="topbar">
+          <div class="topbar-left">
+            <button class="icon-btn mobile-menu" id="menu-toggle" aria-label="Toggle menu">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            </button>
+            <div>
+              <h1 id="page-title">Infrastructure Overview</h1>
+              <p class="subtitle" id="page-subtitle">Real-time health across your data center</p>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3-3" />
+              </svg>
+              <input type="search" id="global-search" placeholder="Search hosts, VMs, datastores…" />
+            </div>
+            <div class="time-range" role="group" aria-label="Time range">
+              <button class="range-btn" data-range="1h">1h</button>
+              <button class="range-btn active" data-range="24h">24h</button>
+              <button class="range-btn" data-range="7d">7d</button>
+            </div>
+            <button class="icon-btn" aria-label="Refresh" id="refresh-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 12a9 9 0 11-2.64-6.36" />
+                <path d="M21 3v6h-6" />
+              </svg>
+            </button>
+            <button class="icon-btn" id="ai-copilot-top-btn" aria-label="Open AI Copilot" title="AI Copilot">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z" />
+              </svg>
+            </button>
+            <button class="icon-btn notify" aria-label="Notifications">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M18 8A6 6 0 106 8c0 7-3 9-3 9h18s-3-2-3-9" />
+              </svg>
+              <span class="notify-dot"></span>
+            </button>
+          </div>
+        </header>
+
+        <div id="ai-context-strip" class="ai-context-strip hidden" aria-live="polite"></div>
+
+        <section class="view active" id="view-overview">
+          <div class="kpi-grid" id="kpi-grid"></div>
+
+          <div id="ai-daily-brief" class="ai-daily-brief"></div>
+
+          <div class="savings-banner" id="savings-banner" aria-labelledby="savings-title"></div>
+
+          <div id="license-overview-banner" class="license-top-banner hidden" aria-live="polite"></div>
+
+          <div class="grid-2-1">
+            <article class="card chart-card">
+              <div class="card-head">
+                <div>
+                  <h2>Cluster utilization</h2>
+                  <p>CPU & memory across all hosts</p>
+                </div>
+                <div class="legend-inline">
+                  <span><i class="dot cpu"></i> CPU</span>
+                  <span><i class="dot mem"></i> Memory</span>
+                </div>
+              </div>
+              <div class="chart-wrap tall">
+                <canvas id="chart-utilization"></canvas>
+              </div>
+            </article>
+
+            <article class="card health-card">
+              <div class="card-head">
+                <div>
+                  <h2>Cluster health</h2>
+                  <p>Composite score</p>
+                </div>
+                <span class="health-score" id="health-score">94</span>
+              </div>
+              <div class="health-ring-wrap">
+                <svg class="health-ring" viewBox="0 0 120 120">
+                  <circle class="ring-bg" cx="60" cy="60" r="52" />
+                  <circle class="ring-fg" id="health-ring" cx="60" cy="60" r="52" />
+                </svg>
+                <span class="health-label">Excellent</span>
+              </div>
+              <ul class="health-breakdown" id="health-breakdown"></ul>
+            </article>
+          </div>
+
+          <div class="grid-1-1">
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>ESXi hosts</h2>
+                  <p>Live resource pressure</p>
+                </div>
+                <a href="#" class="link-btn" data-goto="hosts">View all →</a>
+              </div>
+              <div class="host-grid" id="host-grid-preview"></div>
+            </article>
+
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Recent alerts</h2>
+                  <p>Last 24 hours</p>
+                </div>
+                <a href="#" class="link-btn" data-goto="alerts">Open center →</a>
+              </div>
+              <ul class="alert-list compact" id="alert-preview"></ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-hosts">
+          <div class="section-toolbar">
+            <div class="filters">
+              <button class="filter-chip active" data-filter="all">All</button>
+              <button class="filter-chip" data-filter="healthy">Healthy</button>
+              <button class="filter-chip" data-filter="warning">Warning</button>
+              <button class="filter-chip" data-filter="critical">Critical</button>
+            </div>
+            <span class="meta-count" id="host-count"></span>
+          </div>
+          <div class="host-grid full" id="host-grid-full"></div>
+        </section>
+
+        <section class="view" id="view-vms">
+          <div class="section-toolbar">
+            <div class="filters" id="vm-filters">
+              <button class="filter-chip active" data-vm-filter="all">All VMs</button>
+              <button class="filter-chip" data-vm-filter="poweredOn">Powered on</button>
+              <button class="filter-chip" data-vm-filter="poweredOff">Powered off</button>
+            </div>
+            <div class="section-toolbar-right">
+              <span class="meta-count" id="vm-count"></span>
+              <span class="vm-data-badge vm-data-badge--demo" id="vm-data-badge" title="">Loading…</span>
+            </div>
+          </div>
+          <article class="card table-card">
+            <div class="table-wrap">
+              <table class="data-table" id="vm-table">
+                <thead>
+                  <tr>
+                    <th>Virtual machine</th>
+                    <th>Status</th>
+                    <th>Host</th>
+                    <th>vCPU</th>
+                    <th>RAM</th>
+                    <th>CPU %</th>
+                    <th>Mem %</th>
+                    <th>Datastore</th>
+                  </tr>
+                </thead>
+                <tbody id="vm-tbody"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="view-storage">
+          <div class="kpi-grid storage-kpis" id="storage-kpis"></div>
+          <div class="grid-1-1">
+            <article class="card chart-card">
+              <div class="card-head">
+                <div>
+                  <h2>Datastore capacity</h2>
+                  <p>Used vs free (TB)</p>
+                </div>
+              </div>
+              <div class="chart-wrap">
+                <canvas id="chart-storage"></canvas>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Datastore inventory</h2>
+                  <p>VMFS & vSAN volumes</p>
+                </div>
+              </div>
+              <ul class="datastore-list" id="datastore-list"></ul>
+            </article>
+          </div>
+        </section>
+
+        <section class="view" id="view-network">
+          <div class="grid-1-1">
+            <article class="card chart-card">
+              <div class="card-head">
+                <div>
+                  <h2>Network throughput</h2>
+                  <p>Aggregate ingress / egress (Gbps)</p>
+                </div>
+              </div>
+              <div class="chart-wrap tall">
+                <canvas id="chart-network"></canvas>
+              </div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Distributed switches</h2>
+                  <p>Port groups & utilization</p>
+                </div>
+              </div>
+              <ul class="dvswitch-list" id="dvswitch-list"></ul>
+            </article>
+          </div>
+        </section>
+
+        
+        <section class="view" id="view-ai">
+          <div class="license-page-intro">
+            <h2 class="license-page-title">AI Copilot</h2>
+            <p class="license-page-desc">Ask questions in plain English. Answers use your current hosts, VMs, storage, licenses, and alerts.</p>
+          </div>
+          <div class="grid-1-1">
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Daily brief</h2>
+                  <p>Auto-generated for standups and leadership</p>
+                </div>
+              </div>
+              <div id="ai-view-brief" class="ai-view-brief"></div>
+            </article>
+            <article class="card">
+              <div class="card-head">
+                <div>
+                  <h2>Recommended actions</h2>
+                  <p>Prioritized by impact</p>
+                </div>
+              </div>
+              <div id="ai-view-recs" class="ai-view-recs"></div>
+            </article>
+          </div>
+        </section>
+
+<section class="view" id="view-licensing">
+          <div class="license-page-intro license-page-intro--exec">
+            <h2 class="license-page-title">Licensing snapshot</h2>
+            <p class="license-page-desc">
+              Renewals, spend, and what needs a decision—built for leadership. Operational detail stays with your SAM / infra teams.
+            </p>
+          </div>
+
+          <div class="license-exec-kpis" id="license-exec-kpis"></div>
+
+          <article class="card">
+            <div class="card-head">
+              <div>
+                <h2>Priorities</h2>
+                <p>What to know before the next steering meeting</p>
+              </div>
+            </div>
+            <div id="license-exec-priorities"></div>
+          </article>
+
+          <article class="card table-card">
+            <div class="card-head">
+              <div>
+                <h2>Upcoming renewals</h2>
+                <p>Soonest first — date, risk, and annual cash impact</p>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="data-table license-exec-table">
+                <thead>
+                  <tr>
+                    <th>Commitment</th>
+                    <th>Cluster</th>
+                    <th>Expiry</th>
+                    <th>Runway</th>
+                    <th>Annual cost</th>
+                  </tr>
+                </thead>
+                <tbody id="license-exec-renewals"></tbody>
+              </table>
+            </div>
+          </article>
+        </section>
+
+        <section class="view" id="view-alerts">
+          <div class="section-toolbar">
+            <div class="filters" id="alert-filters">
+              <button class="filter-chip active" data-alert="all">All</button>
+              <button class="filter-chip" data-alert="critical">Critical</button>
+              <button class="filter-chip" data-alert="warning">Warning</button>
+              <button class="filter-chip" data-alert="info">Info</button>
+            </div>
+          </div>
+          <article class="card">
+            <ul class="alert-list full" id="alert-list-full"></ul>
+          </article>
+        </section>
+
+        <footer class="footer">
+          <span>vSphere Insight · Demo observability layer</span>
+          <span class="live-indicator"><i></i> Live · refreshed <span id="last-refresh">just now</span></span>
+        </footer>
+      </main>
+    </div>
+
+    <button type="button" class="ai-copilot-fab" id="ai-copilot-fab" aria-label="Open AI Copilot">
+      <span aria-hidden="true">✦</span> AI
+    </button>
+    <aside class="ai-copilot-panel" id="ai-copilot-panel" aria-hidden="true">
+      <div class="ai-copilot-head">
+        <div>
+          <strong>AI Copilot</strong>
+          <p>Infrastructure assistant</p>
+        </div>
+        <button type="button" class="ai-copilot-close" id="ai-copilot-close" aria-label="Close">&times;</button>
+      </div>
+      <div class="ai-copilot-messages" id="ai-copilot-messages"></div>
+      <div class="ai-copilot-chips" id="ai-copilot-chips"></div>
+      <form class="ai-copilot-form" id="ai-copilot-form">
+        <input type="text" id="ai-copilot-input" placeholder="Ask about VMs, hosts, licenses…" autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </aside>
+
+
+    <script type="module" src="js/data.js"></script>
+    <script type="module" src="js/charts.js"></script>
+    <script type="module" src="js/ai.js"></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

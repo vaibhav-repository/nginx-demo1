@@ -1,0 +1,26 @@
+{
+  "vms": [
+    {
+      "name": "my-app-server-01",
+      "guest": "Ubuntu 22.04 LTS",
+      "host": "esxi-prod-01.dc.local",
+      "power": "poweredOn",
+      "vcpu": 4,
+      "ram": 16,
+      "cpu": 22,
+      "mem": 48,
+      "datastore": "DS-SSD-01"
+    },
+    {
+      "name": "my-db-01",
+      "guest": "Windows Server 2022",
+      "host": "esxi-prod-02.dc.local",
+      "power": "poweredOn",
+      "vcpu": 8,
+      "ram": 64,
+      "cpu": 35,
+      "mem": 62,
+      "datastore": "DS-SAS-01"
+    }
+  ]
+}
