@@ -5,7 +5,8 @@ import { fileURLToPath } from "url";
 import { answerCopilotQuestion } from "./js/ai.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
-const PORT = process.env.PORT || 5173;
+const PORT = Number(process.env.PORT) || 5173;
+const HOST = process.env.HOST || "0.0.0.0";
 
 const MIME = {
   ".html": "text/html",
@@ -89,7 +90,7 @@ createServer(async (req, res) => {
   } catch {
     res.writeHead(404).end("Not found");
   }
-}).listen(PORT, () => {
+}).listen(PORT, HOST, () => {
   console.log(`vSphere Insight → http://localhost:${PORT}`);
   console.log(`  GET /api/health  — backend check`);
   console.log(`  GET /api/vms     — load data/vm-inventory.json (optional)`);
